@@ -1,11 +1,5 @@
 import cn from 'classnames';
-import {
-  AlertCircle,
-  Check,
-  CheckCheck,
-  LoaderCircle,
-  RefreshCcw,
-} from 'lucide-react';
+import { AlertCircle, Check, CheckCheck, LoaderCircle } from 'lucide-react';
 
 import type { TChatMessageStatus } from '@/shared/types/message';
 
@@ -13,14 +7,12 @@ export interface IProps {
   status: TChatMessageStatus;
   className?: string;
   size?: number;
-  onRetry?: () => void;
 }
 
 export const MessageDeliveryStatus = ({
   status,
   className,
   size = 16,
-  onRetry,
 }: IProps) => {
   switch (status) {
     case 'sending':
@@ -53,16 +45,6 @@ export const MessageDeliveryStatus = ({
     case 'failed':
       return (
         <div className="flex items-center gap-1.5">
-          {onRetry && (
-            <button
-              onClick={onRetry}
-              className="btn btn-xs btn-ghost p-0 w-4 h-4"
-              aria-label="Отправить заново"
-              title="Отправить заново"
-            >
-              <RefreshCcw className="w-full h-full" />
-            </button>
-          )}
           <div className="tooltip tooltip-error" data-tip="Ошибка отправки">
             <AlertCircle
               size={size}
