@@ -1,9 +1,9 @@
 import { Chat } from "@/features/chat";
 
-export const ChatPage = () => {
+export function ChatPage() {
   return (
     <>
       <Chat />
     </>
   );
-};
+}
