@@ -13,7 +13,7 @@ export function Chat() {
           avatar="https://img.daisyui.com/images/profile/demo/kenobee@192.webp"
         />
 
-        <div className="flex flex-col-reverse h-full w-full p-4 bg-base self-end">
+        <div className="flex flex-col-reverse h-full w-full p-4 bg-base self-end overflow-y-scroll">
           <Message
             message="I hate you!"
             status={'failed'}

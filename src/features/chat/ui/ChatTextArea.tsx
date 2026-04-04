@@ -45,9 +45,9 @@ export function ChatTextArea() {
 
   return (
     <div className="w-full relative">
-      <div className="relative">
+      <div className="relative -bottom-1">
         <TextareaAutosize
-          className="min-h-10 max-h-30 p-4 pl-12 w-full focus:outline-0 bg-base-300 rounded-none"
+          className="min-h-14 max-h-30 p-4 pl-12 w-full focus:outline-0 bg-base-300 rounded-none border-0"
           placeholder="Write a message..."
           value={message}
           onChange={(e) => setMessage(e.target.value)}
