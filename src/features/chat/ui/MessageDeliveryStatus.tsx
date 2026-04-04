@@ -1,13 +1,13 @@
-import cn from "classnames";
+import cn from 'classnames';
 import {
   AlertCircle,
   Check,
   CheckCheck,
   LoaderCircle,
   RefreshCcw,
-} from "lucide-react";
+} from 'lucide-react';
 
-import type { TChatMessageStatus } from "@/shared/types/message";
+import type { TChatMessageStatus } from '@/shared/types/message';
 
 export interface IProps {
   status: TChatMessageStatus;
@@ -23,34 +23,34 @@ export const MessageDeliveryStatus = ({
   onRetry,
 }: IProps) => {
   switch (status) {
-    case "sending":
+    case 'sending':
       return (
         <LoaderCircle
           size={size}
-          className={cn("animate-spin text-muted-foreground", className)}
+          className={cn('animate-spin text-muted-foreground', className)}
           aria-label="Отправляется"
         />
       );
 
-    case "sent":
+    case 'sent':
       return (
         <Check
           size={size}
-          className={cn("text-gray-500 dark:text-gray-400", className)}
+          className={cn('text-gray-500 dark:text-gray-400', className)}
           aria-label="Отправлено"
         />
       );
 
-    case "read":
+    case 'read':
       return (
         <CheckCheck
           size={size}
-          className={cn("text-blue-500 dark:text-blue-400", className)}
+          className={cn('text-blue-500 dark:text-blue-400', className)}
           aria-label="Прочитано"
         />
       );
 
-    case "failed":
+    case 'failed':
       return (
         <div className="flex items-center gap-1.5">
           {onRetry && (
@@ -67,8 +67,8 @@ export const MessageDeliveryStatus = ({
             <AlertCircle
               size={size}
               className={cn(
-                "text-red-500 dark:text-red-400 cursor-help",
-                className
+                'text-red-500 dark:text-red-400 cursor-help',
+                className,
               )}
               aria-label="Ошибка отправки"
             />

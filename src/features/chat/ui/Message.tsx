@@ -1,7 +1,9 @@
-import type { IChatMessage } from "@/shared/types/message";
-import { formatMessageTime } from "@/shared/utils/formatMessageTime";
-import cn from "classnames";
-import { MessageDeliveryStatus } from "./MessageDeliveryStatus";
+import cn from 'classnames';
+
+import type { IChatMessage } from '@/shared/types/message';
+import { formatMessageTime } from '@/shared/utils/formatMessageTime';
+
+import { MessageDeliveryStatus } from './MessageDeliveryStatus';
 
 interface IProps extends IChatMessage {
   onRetry?: () => void;
@@ -14,13 +16,10 @@ export function Message({
   sentAt,
   onRetry,
 }: IProps) {
+  const chatPositionClass = isOwnMessage ? 'chat-end' : 'chat-start';
+
   return (
-    <div
-      className={cn("chat", {
-        ["chat-start"]: !isOwnMessage,
-        ["chat-end"]: isOwnMessage,
-      })}
-    >
+    <div className={cn('chat', chatPositionClass)}>
       <div className="chat-bubble">{message}</div>
       <div className="chat-footer">
         <MessageDeliveryStatus onRetry={onRetry} status={status} />
