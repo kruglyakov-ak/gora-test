@@ -1,6 +1,7 @@
 import dayjs from 'dayjs';
 
 import { ChatHeader } from './ChatHeader';
+import { ChatTextArea } from './ChatTextArea';
 import { Message } from './Message';
 
 export function Chat() {
@@ -27,6 +28,8 @@ export function Chat() {
             sentAt={dayjs().toISOString()}
           />
         </div>
+
+        <ChatTextArea />
       </div>
     </div>
   );
