@@ -1,5 +1,6 @@
-import dayjs from "dayjs";
 import "dayjs/locale/ru";
+
+import dayjs from "dayjs";
 
 export function formatMessageTime(isoTime: string): string {
   const now = dayjs();
