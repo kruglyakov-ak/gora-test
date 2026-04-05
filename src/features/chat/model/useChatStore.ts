@@ -20,11 +20,23 @@ type Actions = {
   retryMessage: (id: IChatMessage['id']) => void;
 };
 
+const updateMessageStatus = (
+  set: (fn: (state: State) => Partial<State>) => void,
+  id: string,
+  status: IChatMessage['status'],
+) => {
+  set((state) => ({
+    messages: state.messages.map((msg) =>
+      msg.id === id ? { ...msg, status } : msg,
+    ),
+  }));
+};
+
 const addBotReply = async (
-  _messages: IChatMessage[],
   set: (fn: (state: State) => Partial<State>) => void,
 ) => {
   const botText = BOT_MESSAGES[Math.floor(Math.random() * BOT_MESSAGES.length)];
+
   const botMessage: IChatMessage = {
     id: generateId(),
     message: botText,
@@ -32,9 +44,7 @@ const addBotReply = async (
     sentAt: dayjs().toISOString(),
   };
 
-  set(() => ({
-    isTyping: true,
-  }));
+  set(() => ({ isTyping: true }));
 
   await delay(1000 + Math.random() * 2000);
 
@@ -49,6 +59,7 @@ export const useChatStore = create<State & Actions>()(
     (set, get) => ({
       messages: [],
       isTyping: false,
+
       async sendMessage(message) {
         const id = generateId();
 
@@ -67,28 +78,16 @@ export const useChatStore = create<State & Actions>()(
         try {
           await sendMessageApi(true);
 
-          set((state) => ({
-            messages: state.messages.map((msg) =>
-              msg.id === id ? { ...msg, status: 'sent' } : msg,
-            ),
-          }));
-
+          updateMessageStatus(set, id, 'sent');
           await delay(1000 + Math.random() * 1000);
-          set((state) => ({
-            messages: state.messages.map((msg) =>
-              msg.id === id ? { ...msg, status: 'read' } : msg,
-            ),
-          }));
 
-          await addBotReply(get().messages, set);
+          updateMessageStatus(set, id, 'read');
+
+          await addBotReply(set);
         } catch (error) {
           const errorMessage = getErrorMessage(error);
           console.error(errorMessage);
-          set((state) => ({
-            messages: state.messages.map((msg) =>
-              msg.id === id ? { ...msg, status: 'failed' } : msg,
-            ),
-          }));
+          updateMessageStatus(set, id, 'failed');
         }
       },
 
@@ -96,49 +95,35 @@ export const useChatStore = create<State & Actions>()(
         const message = get().messages.find((m) => m.id === id);
         if (!message || message.status !== 'failed') return;
 
-        set((state) => ({
-          messages: state.messages.map((msg) =>
-            msg.id === id ? { ...msg, status: 'sending' } : msg,
-          ),
-        }));
+        updateMessageStatus(set, id, 'sending');
 
         try {
           await sendMessageApi(false);
 
-          set((state) => ({
-            messages: state.messages.map((msg) =>
-              msg.id === id ? { ...msg, status: 'sent' } : msg,
-            ),
-          }));
-
+          updateMessageStatus(set, id, 'sent');
           await delay(1000 + Math.random() * 1000);
-          set((state) => ({
-            messages: state.messages.map((msg) =>
-              msg.id === id ? { ...msg, status: 'read' } : msg,
-            ),
-          }));
 
-          await addBotReply(get().messages, set);
+          updateMessageStatus(set, id, 'read');
+
+          await addBotReply(set);
         } catch (error) {
           const errorMessage = getErrorMessage(error);
           console.error(errorMessage);
-
-          set((state) => ({
-            messages: state.messages.map((msg) =>
-              msg.id === id ? { ...msg, status: 'failed' } : msg,
-            ),
-          }));
+          updateMessageStatus(set, id, 'failed');
         }
       },
     }),
+
     {
       name: 'chat-storage',
       storage: createJSONStorage(() => localStorage),
+
       onRehydrateStorage: () => (state) => {
-        if (state && state.messages) {
+        if (state?.messages?.length) {
           const uniqueMessages = Array.from(
             new Map(state.messages.map((msg) => [msg.id, msg])).values(),
           );
+
           if (uniqueMessages.length !== state.messages.length) {
             state.messages = uniqueMessages;
           }
