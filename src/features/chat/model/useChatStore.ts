@@ -2,9 +2,10 @@ import dayjs from 'dayjs';
 import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
-import { BOT_MESSAGES, sendMessageApi } from '@/shared/api/chatApi';
-import type { IChatMessage } from '@/shared/types/message';
-import { getErrorMessage } from '@/shared/utils/getErrorMessage';
+import { BOT_MESSAGES, sendMessageApi } from '@/features/chat/api/chatApi';
+import { getErrorMessage } from '@/shared/utils';
+
+import type { IChatMessage } from './types';
 
 const generateId = () => crypto.randomUUID();
 

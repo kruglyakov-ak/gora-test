@@ -3,7 +3,7 @@ import { Smile } from 'lucide-react';
 import { useEffect, useRef, useState } from 'react';
 import TextareaAutosize from 'react-textarea-autosize';
 
-import { useChatStore } from '@/shared/store/useChatStore';
+import { useChatStore } from '../model/useChatStore';
 
 export function ChatTextArea() {
   const sendMessage = useChatStore((state) => state.sendMessage);

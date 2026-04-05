@@ -1,8 +1,8 @@
 import { useShallow } from 'zustand/shallow';
 
-import { useAutoScroll } from '@/shared/hooks/useAutoScroll';
-import { useChatStore } from '@/shared/store/useChatStore';
+import { useAutoScroll } from '@/shared/hooks';
 
+import { useChatStore } from '../model/useChatStore';
 import { Message } from './Message';
 
 export function MessagesList() {

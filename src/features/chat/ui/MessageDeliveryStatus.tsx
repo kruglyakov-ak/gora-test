@@ -1,7 +1,7 @@
 import cn from 'classnames';
 import { AlertCircle, Check, CheckCheck, LoaderCircle } from 'lucide-react';
 
-import type { TChatMessageStatus } from '@/shared/types/message';
+import type { TChatMessageStatus } from '@/features/chat/model/types';
 
 export interface IProps {
   status: TChatMessageStatus;

@@ -1,4 +1,4 @@
-import { useChatStore } from '@/shared/store/useChatStore';
+import { useChatStore } from '../model/useChatStore';
 
 interface IProps {
   name: string;
