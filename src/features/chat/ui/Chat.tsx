@@ -1,8 +1,6 @@
-import dayjs from 'dayjs';
-
 import { ChatHeader } from './ChatHeader';
 import { ChatTextArea } from './ChatTextArea';
-import { Message } from './Message';
+import { MessagesList } from './MessagesList';
 
 export function Chat() {
   return (
@@ -13,21 +11,7 @@ export function Chat() {
           avatar="https://img.daisyui.com/images/profile/demo/kenobee@192.webp"
         />
 
-        <div className="flex flex-col-reverse h-full w-full p-4 bg-base self-end overflow-y-scroll">
-          <Message
-            message="I hate you!"
-            status={'failed'}
-            sentAt={dayjs().toISOString()}
-            isOwnMessage
-            onRetry={() => console.log('retry')}
-          />
-
-          <Message
-            message="You were the Chosen One!"
-            status={'read'}
-            sentAt={dayjs().toISOString()}
-          />
-        </div>
+        <MessagesList />
 
         <ChatTextArea />
       </div>
