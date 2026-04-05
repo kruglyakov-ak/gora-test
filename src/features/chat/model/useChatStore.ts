@@ -2,12 +2,10 @@ import dayjs from 'dayjs';
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 
-import { BOT_MESSAGES, sendMessageApi } from '@/features/chat/api/chatApi';
 import { getErrorMessage } from '@/shared/utils';
 
-import { addMessageIfNotExists } from '../lib/addMessageIfNotExists';
-import { delay } from '../lib/delay';
-import { generateId } from '../lib/generateId';
+import { BOT_MESSAGES, sendMessageApi } from '../api/chatApi';
+import { addMessageIfNotExists, delay, generateId } from '../lib';
 import type { IChatMessage } from './types';
 
 type State = {

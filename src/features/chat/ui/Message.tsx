@@ -1,9 +1,9 @@
 import cn from 'classnames';
 import { RefreshCcw, X } from 'lucide-react';
 
-import { formatMessageTime } from '@/features/chat/lib/formatMessageTime';
 import type { IChatMessage } from '@/features/chat/model/types';
 
+import { formatMessageTime } from '../lib';
 import { MessageDeliveryStatus } from './MessageDeliveryStatus';
 
 interface IProps extends IChatMessage {
