@@ -104,20 +104,52 @@ export const useChatStore = create<State & Actions>()(
         const message = get().messages.find((m) => m.id === id);
         if (!message || message.status !== 'failed') return;
 
-        updateMessageStatus(set, id, 'sending');
+        // Удаляем старое failed сообщение
+        set((state) => ({
+          messages: state.messages.filter((msg) => msg.id !== id),
+        }));
+
+        // Создаём новое сообщение с актуальным временем
+        const retryId = generateId();
+        const controller = new AbortController();
+
+        const retryMessage: IChatMessage = {
+          ...message,
+          id: retryId,
+          status: 'sending',
+          sentAt: dayjs().toISOString(), // ← новое время
+        };
+
+        // Добавляем в конец списка
+        set((state) => ({
+          messages: addMessageIfNotExists(state.messages, retryMessage),
+          abortControllers: {
+            ...state.abortControllers,
+            [retryId]: controller,
+          },
+        }));
 
         try {
-          await sendMessageApi(false);
+          await sendMessageApi(false, controller.signal);
 
-          updateMessageStatus(set, id, 'sent');
+          updateMessageStatus(set, retryId, 'sent');
           await delay(1000 + Math.random() * 1000);
-          updateMessageStatus(set, id, 'read');
+          updateMessageStatus(set, retryId, 'read');
 
           await addBotReply(set);
         } catch (error: unknown) {
+          if (error instanceof Error && error.name === 'AbortError') {
+            return;
+          }
           const errorMessage = getErrorMessage(error);
           console.error(errorMessage);
-          updateMessageStatus(set, id, 'failed');
+          updateMessageStatus(set, retryId, 'failed');
+        } finally {
+          set((state) => {
+            const newControllers = { ...state.abortControllers };
+            delete newControllers[retryId];
+            return { abortControllers: newControllers };
+          });
         }
       },
 
