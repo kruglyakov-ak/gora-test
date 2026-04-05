@@ -1,12 +1,14 @@
 import cn from 'classnames';
-import { RefreshCcw } from 'lucide-react';
+import { RefreshCcw, X } from 'lucide-react';
 
-import { formatMessageTime } from '../lib/formatMessageTime';
-import type { IChatMessage } from '../model/types';
+import { formatMessageTime } from '@/features/chat/lib/formatMessageTime';
+import type { IChatMessage } from '@/features/chat/model/types';
+
 import { MessageDeliveryStatus } from './MessageDeliveryStatus';
 
 interface IProps extends IChatMessage {
   onRetry?: () => void;
+  onCancel?: () => void;
 }
 
 export function Message({
@@ -15,11 +17,14 @@ export function Message({
   status,
   sentAt,
   onRetry,
+  onCancel,
 }: IProps) {
   const chatPositionClass = isOwnMessage ? 'chat-end' : 'chat-start';
   const bubbleColorClass = isOwnMessage
     ? ''
     : 'bg-primary text-primary-content';
+
+  const isSending = status === 'sending';
 
   return (
     <div className={cn('chat', chatPositionClass, 'message-appear')}>
@@ -29,6 +34,17 @@ export function Message({
           bubbleColorClass,
         )}
       >
+        {isOwnMessage && isSending && onCancel && (
+          <button
+            onClick={onCancel}
+            className="btn btn-xs btn-circle btn-ghost p-0 w-6 h-6 absolute -top-2 -right-2 bg-base-100 hover:bg-base-200 shadow-md"
+            aria-label="Отменить отправку"
+            title="Отменить отправку"
+          >
+            <X className="w-4 h-4" />
+          </button>
+        )}
+
         {onRetry && status === 'failed' && (
           <button
             onClick={onRetry}

@@ -6,9 +6,10 @@ import { useChatStore } from '../model/useChatStore';
 import { Message } from './Message';
 
 export function MessagesList() {
-  const { messages, retryMessage } = useChatStore(
+  const { messages, retryMessage, abortMessage } = useChatStore(
     useShallow((state) => ({
       retryMessage: state.retryMessage,
+      abortMessage: state.abortMessage,
       messages: state.messages,
     })),
   );
@@ -28,6 +29,7 @@ export function MessagesList() {
           sentAt={sentAt}
           isOwnMessage={!!isOwnMessage}
           onRetry={() => retryMessage(id)}
+          onCancel={() => abortMessage(id)}
         />
       ))}
     </div>

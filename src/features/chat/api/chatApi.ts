@@ -1,16 +1,27 @@
-export const sendMessageApi = (needError: boolean) => {
-  return new Promise<void>((resolve, reject) => {
-    const delay = 1000 + Math.random() * 1000;
+export const sendMessageApi = (
+  needError: boolean,
+  signal?: AbortSignal,
+): Promise<void> => {
+  return new Promise((resolve, reject) => {
+    const delayMs = 1000 + Math.random() * 1000;
+    const timeoutId = setTimeout(() => {
+      if (signal?.aborted) {
+        reject(new DOMException('The operation was aborted.', 'AbortError'));
+        return;
+      }
 
-    setTimeout(() => {
       const isError = Math.random() < 0.2;
-
       if (isError && needError) {
         reject(new Error('Network error'));
       } else {
         resolve();
       }
-    }, delay);
+    }, delayMs);
+
+    signal?.addEventListener('abort', () => {
+      clearTimeout(timeoutId);
+      reject(new DOMException('The operation was aborted.', 'AbortError'));
+    });
   });
 };
 
