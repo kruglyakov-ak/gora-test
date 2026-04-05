@@ -1,11 +1,11 @@
-export const sendMessageApi = () => {
+export const sendMessageApi = (needError: boolean) => {
   return new Promise<void>((resolve, reject) => {
     const delay = 1000 + Math.random() * 1000;
 
     setTimeout(() => {
       const isError = Math.random() < 0.2;
 
-      if (isError) {
+      if (isError && needError) {
         reject(new Error('Network error'));
       } else {
         resolve();

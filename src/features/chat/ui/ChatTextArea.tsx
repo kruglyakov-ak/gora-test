@@ -6,7 +6,7 @@ import TextareaAutosize from 'react-textarea-autosize';
 import { useChatStore } from '@/shared/store/useChatStore';
 
 export function ChatTextArea() {
-  const { sendMessage } = useChatStore();
+  const sendMessage = useChatStore((state) => state.sendMessage);
   const [message, setMessage] = useState('');
   const [showPicker, setShowPicker] = useState(false);
   const pickerRef = useRef<HTMLDivElement>(null);

@@ -1,9 +1,13 @@
+import { useChatStore } from '@/shared/store/useChatStore';
+
 interface IProps {
   name: string;
   avatar?: string;
 }
 
 export function ChatHeader({ name, avatar }: IProps) {
+  const isTyping = useChatStore((state) => state.isTyping);
+
   return (
     <div className="flex justify-between items-center p-4 bg-primary">
       <div className="flex items-center gap-2">
@@ -19,7 +23,19 @@ export function ChatHeader({ name, avatar }: IProps) {
           </div>
         </div>
 
-        <h1 className="text-xl font-semibold text-primary-content">{name}</h1>
+        <div className="flex flex-col h-full">
+          <h1 className="text-xl font-semibold text-primary-content leading-none">
+            {name}
+          </h1>
+          {isTyping ? (
+            <span className="text-sm text-primary-content leading-none">
+              Typing{' '}
+              <span className="loading loading-dots loading-xs translate-y-0.5"></span>
+            </span>
+          ) : (
+            <span className="text-sm text-primary-content">Online</span>
+          )}
+        </div>
       </div>
     </div>
   );

@@ -6,7 +6,7 @@ import { formatMessageTime } from '@/shared/utils/formatMessageTime';
 
 import { MessageDeliveryStatus } from './MessageDeliveryStatus';
 
-interface IProps extends Omit<IChatMessage, 'id'> {
+interface IProps extends IChatMessage {
   onRetry?: () => void;
 }
 

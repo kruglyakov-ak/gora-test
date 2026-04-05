@@ -1,11 +1,19 @@
+import { useShallow } from 'zustand/shallow';
+
 import { useAutoScroll } from '@/shared/hooks/useAutoScroll';
 import { useChatStore } from '@/shared/store/useChatStore';
 
 import { Message } from './Message';
 
 export function MessagesList() {
-  const { messages, retryMessage } = useChatStore();
+  const { messages, retryMessage } = useChatStore(
+    useShallow((state) => ({
+      retryMessage: state.retryMessage,
+      messages: state.messages,
+    })),
+  );
   const containerRef = useAutoScroll(messages);
+
   return (
     <div
       ref={containerRef}
@@ -14,6 +22,7 @@ export function MessagesList() {
       {messages.map(({ id, message, sentAt, status, isOwnMessage }) => (
         <Message
           key={id}
+          id={id}
           message={message}
           status={status}
           sentAt={sentAt}

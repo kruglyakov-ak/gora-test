@@ -4,11 +4,13 @@ import { persist } from 'zustand/middleware';
 
 import { BOT_MESSAGES, sendMessageApi } from '@/shared/api/chatApi';
 import type { IChatMessage } from '@/shared/types/message';
+import { getErrorMessage } from '@/shared/utils/getErrorMessage';
 
 const generateId = () => crypto.randomUUID();
 
 type State = {
   messages: IChatMessage[];
+  isTyping: boolean;
 };
 
 type Actions = {
@@ -16,11 +18,38 @@ type Actions = {
   retryMessage: (id: IChatMessage['id']) => void;
 };
 
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+const addBotReply = async (
+  _messages: IChatMessage[],
+  set: (fn: (state: State) => Partial<State>) => void,
+) => {
+  const botText = BOT_MESSAGES[Math.floor(Math.random() * BOT_MESSAGES.length)];
+  const botMessage: IChatMessage = {
+    id: generateId(),
+    message: botText,
+    status: 'read',
+    sentAt: dayjs().toISOString(),
+  };
+
+  set(() => ({
+    isTyping: true,
+  }));
+
+  await delay(1000 + Math.random() * 2000);
+
+  set((state) => ({
+    messages: [...state.messages, botMessage],
+    isTyping: false,
+  }));
+};
+
 export const useChatStore = create<State & Actions>()(
   persist(
     (set, get) => ({
       messages: [],
-      sendMessage(message) {
+      isTyping: false,
+      async sendMessage(message) {
         const id = generateId();
 
         const newMessage: IChatMessage = {
@@ -35,45 +64,37 @@ export const useChatStore = create<State & Actions>()(
           messages: [...state.messages, newMessage],
         }));
 
-        sendMessageApi()
-          .then(() => {
-            set((state) => ({
-              messages: state.messages.map((msg) =>
-                msg.id === id ? { ...msg, status: 'sent' } : msg,
-              ),
-            }));
+        try {
+          await sendMessageApi(true);
 
-            const botText =
-              BOT_MESSAGES[Math.floor(Math.random() * BOT_MESSAGES.length)];
+          set((state) => ({
+            messages: state.messages.map((msg) =>
+              msg.id === id ? { ...msg, status: 'sent' } : msg,
+            ),
+          }));
 
-            const botMessage: IChatMessage = {
-              id: generateId(),
-              message: botText,
-              status: 'sent',
-              sentAt: dayjs().toISOString(),
-            };
+          await delay(1000 + Math.random() * 1000);
+          set((state) => ({
+            messages: state.messages.map((msg) =>
+              msg.id === id ? { ...msg, status: 'read' } : msg,
+            ),
+          }));
 
-            setTimeout(
-              () => {
-                set((state) => ({
-                  messages: [...state.messages, botMessage],
-                }));
-              },
-              1000 + Math.random() * 1000,
-            );
-          })
-          .catch(() => {
-            set((state) => ({
-              messages: state.messages.map((msg) =>
-                msg.id === id ? { ...msg, status: 'failed' } : msg,
-              ),
-            }));
-          });
+          await addBotReply(get().messages, set);
+        } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          console.error(errorMessage);
+          set((state) => ({
+            messages: state.messages.map((msg) =>
+              msg.id === id ? { ...msg, status: 'failed' } : msg,
+            ),
+          }));
+        }
       },
 
-      retryMessage(id) {
+      async retryMessage(id) {
         const message = get().messages.find((m) => m.id === id);
-        if (!message) return;
+        if (!message || message.status !== 'failed') return;
 
         set((state) => ({
           messages: state.messages.map((msg) =>
@@ -81,21 +102,33 @@ export const useChatStore = create<State & Actions>()(
           ),
         }));
 
-        sendMessageApi()
-          .then(() => {
-            set((state) => ({
-              messages: state.messages.map((msg) =>
-                msg.id === id ? { ...msg, status: 'sent' } : msg,
-              ),
-            }));
-          })
-          .catch(() => {
-            set((state) => ({
-              messages: state.messages.map((msg) =>
-                msg.id === id ? { ...msg, status: 'failed' } : msg,
-              ),
-            }));
-          });
+        try {
+          await sendMessageApi(false);
+
+          set((state) => ({
+            messages: state.messages.map((msg) =>
+              msg.id === id ? { ...msg, status: 'sent' } : msg,
+            ),
+          }));
+
+          await delay(1000 + Math.random() * 1000);
+          set((state) => ({
+            messages: state.messages.map((msg) =>
+              msg.id === id ? { ...msg, status: 'read' } : msg,
+            ),
+          }));
+
+          await addBotReply(get().messages, set);
+        } catch (error) {
+          const errorMessage = getErrorMessage(error);
+          console.error(errorMessage);
+
+          set((state) => ({
+            messages: state.messages.map((msg) =>
+              msg.id === id ? { ...msg, status: 'failed' } : msg,
+            ),
+          }));
+        }
       },
     }),
     {
