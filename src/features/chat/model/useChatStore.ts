@@ -18,6 +18,7 @@ type Actions = {
   sendMessage: (message: IChatMessage['message']) => void;
   retryMessage: (id: IChatMessage['id']) => void;
   abortMessage: (id: IChatMessage['id']) => void;
+  clearMessages: () => void;
 };
 
 const updateMessageStatus = (
@@ -165,6 +166,13 @@ export const useChatStore = create<State & Actions>()(
           return {
             messages: state.messages.filter((msg) => msg.id !== id),
             abortControllers: newControllers,
+          };
+        });
+      },
+      clearMessages() {
+        set(() => {
+          return {
+            messages: [],
           };
         });
       },

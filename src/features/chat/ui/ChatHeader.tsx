@@ -1,3 +1,6 @@
+import { RefreshCcw } from 'lucide-react';
+import { useShallow } from 'zustand/shallow';
+
 import { useChatStore } from '../model/useChatStore';
 
 interface IProps {
@@ -6,7 +9,12 @@ interface IProps {
 }
 
 export function ChatHeader({ name, avatar }: IProps) {
-  const isTyping = useChatStore((state) => state.isTyping);
+  const { isTyping, clearMessages } = useChatStore(
+    useShallow((state) => ({
+      clearMessages: state.clearMessages,
+      isTyping: state.isTyping,
+    })),
+  );
 
   return (
     <div className="flex justify-between items-center p-4 bg-primary">
@@ -37,6 +45,16 @@ export function ChatHeader({ name, avatar }: IProps) {
           )}
         </div>
       </div>
+
+      <button
+        onClick={clearMessages}
+        className="btn btn-md btn-error btn-outline text-primary-content"
+        aria-label="Очистить историю чата"
+        title="Очистить историю чата"
+      >
+        Очистить историю чата
+        <RefreshCcw />
+      </button>
     </div>
   );
 }
