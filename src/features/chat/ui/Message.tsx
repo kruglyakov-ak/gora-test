@@ -22,7 +22,7 @@ export function Message({
     : 'bg-primary text-primary-content';
 
   return (
-    <div className={cn('chat', chatPositionClass)}>
+    <div className={cn('chat', chatPositionClass, 'message-appear')}>
       <div
         className={cn(
           'chat-bubble max-w-xl flex items-center relative',
