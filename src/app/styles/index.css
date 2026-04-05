@@ -19,3 +19,9 @@
 .chat-bubble {
   transition: all 0.2s ease;
 }
+
+@layer base {
+  .chat-container {
+    padding-bottom: env(safe-area-inset-bottom);
+  }
+}
