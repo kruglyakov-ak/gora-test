@@ -1,4 +1,4 @@
-import { RefreshCcw } from 'lucide-react';
+import { Trash2 } from 'lucide-react';
 import { useShallow } from 'zustand/shallow';
 
 import { useChatStore } from '../model/useChatStore';
@@ -48,12 +48,12 @@ export function ChatHeader({ name, avatar }: IProps) {
 
       <button
         onClick={clearMessages}
-        className="btn btn-md btn-error btn-outline text-primary-content"
+        className="btn btn-xs btn-error btn-outline text-error md:text-primary-content"
         aria-label="Очистить историю чата"
         title="Очистить историю чата"
       >
-        Очистить историю чата
-        <RefreshCcw />
+        <span className="hidden md:inline">Очистить историю чата</span>
+        <Trash2 size={15} />
       </button>
     </div>
   );
