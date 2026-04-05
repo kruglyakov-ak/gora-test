@@ -1,13 +1,14 @@
 import dayjs from 'dayjs';
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { createJSONStorage, persist } from 'zustand/middleware';
 
 import { BOT_MESSAGES, sendMessageApi } from '@/features/chat/api/chatApi';
 import { getErrorMessage } from '@/shared/utils';
 
+import { addMessageIfNotExists } from '../lib/addMessageIfNotExists';
+import { delay } from '../lib/delay';
+import { generateId } from '../lib/generateId';
 import type { IChatMessage } from './types';
-
-const generateId = () => crypto.randomUUID();
 
 type State = {
   messages: IChatMessage[];
@@ -18,8 +19,6 @@ type Actions = {
   sendMessage: (message: IChatMessage['message']) => void;
   retryMessage: (id: IChatMessage['id']) => void;
 };
-
-const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 const addBotReply = async (
   _messages: IChatMessage[],
@@ -40,7 +39,7 @@ const addBotReply = async (
   await delay(1000 + Math.random() * 2000);
 
   set((state) => ({
-    messages: [...state.messages, botMessage],
+    messages: addMessageIfNotExists(state.messages, botMessage),
     isTyping: false,
   }));
 };
@@ -62,7 +61,7 @@ export const useChatStore = create<State & Actions>()(
         };
 
         set((state) => ({
-          messages: [...state.messages, newMessage],
+          messages: addMessageIfNotExists(state.messages, newMessage),
         }));
 
         try {
@@ -134,6 +133,17 @@ export const useChatStore = create<State & Actions>()(
     }),
     {
       name: 'chat-storage',
+      storage: createJSONStorage(() => localStorage),
+      onRehydrateStorage: () => (state) => {
+        if (state && state.messages) {
+          const uniqueMessages = Array.from(
+            new Map(state.messages.map((msg) => [msg.id, msg])).values(),
+          );
+          if (uniqueMessages.length !== state.messages.length) {
+            state.messages = uniqueMessages;
+          }
+        }
+      },
     },
   ),
 );
