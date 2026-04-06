@@ -18,8 +18,10 @@ export function MessagesList() {
   return (
     <div
       ref={containerRef}
-      className="flex flex-col flex-1 justify-end min-h-0 w-full p-4 bg-base overflow-y-auto"
+      className="flex flex-col flex-1 min-h-0 w-full p-4 bg-base overflow-y-auto"
     >
+      <div className="mt-auto" />
+
       {messages.map(({ id, message, sentAt, status, isOwnMessage }) => (
         <Message
           key={id}
